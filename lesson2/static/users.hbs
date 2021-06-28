@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body style="text-align: center">
+
+<a href="/login" style="position: fixed; right: 50px; top: 20px">Logout</a>
+
+{{#if userLog}}
+
+    <h2 >Congratulations!</h2>
+
+    {{#each db}}
+        <div>{{this.name}}</div>
+        <div>{{this.email}}</div>
+        <hr>
+    {{/each}}
+
+{{/if}}
+
+</body>
+</html>
