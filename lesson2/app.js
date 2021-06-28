@@ -1,40 +1,23 @@
-/*
-Вам потрібно реалізувати мінімум 3 строрінки.
-1) Реєстрація
-2) Логінація.
-3) Список всіх юзерів.
-
-Створити файлик з юзерами, який буде виступати в ролі бази данних.
-
-При реєстрації юзер вводин логін та пороль і ви його данні дописуєте у файлик.
-Якщо такий мейл вже є, то видаємо помилку.
-
-При логінації юзер так само ввоить мейл та пароль і вам необхідно знайти юзера в файлі. Якщо такий мейлик з таким паролем є, то привіти юзера на платформі показати інформацію про нього та кнопочку, яка перекине нас на список всіх юзерів.
-В інакшому випадку сказати, що необхідно реєструватись.
-
-І відображення всіх юзерів це відповідно просто виведення списку вісх юзерів.
-
-При реєстрації мейли не можуть повторюватись
-Показати менше
- */
-const express = require('express');
-const hbs = require('express-handlebars');
-const path = require('path');
+const express =require ('express');
+const expressHbs= require('express-handlebars');
+const path= require('path');
+const app =express ();
 const fs = require('fs');
 const db = require('./db.json');
 const filePath = path.join(process.cwd(), 'bd.json');
 let userLog = false;
+const rejectMsg ='Write another email or password' ;
 
-const app = express();
-
+app.use(express.static(path.join(__dirname,'static')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(process.cwd(), 'static')));
+//app.use(express.static(path.join(process.cwd(), 'static')));
 
-app.set('view engine', '.hbs');
-app.engine('.hbs', hbs({ defaultLayout: false }));
+app.set('myPages engine', '.hbs');
+//app.engine('.hbs', expressHbs({ defaultLayout: false }));
 
-app.set('static', path.join(process.cwd(), 'static'));
+
+//app.set('views', path.join(process.cwd(), 'static'));
 
 app.get('/', (req, res) => {
     res.render('registration');
@@ -45,7 +28,7 @@ app.get('/login', (req, res) => {
 });
 
 app.get('/rejection', (req, res) => {
-    res.render('rejection', { reject });
+    res.render('rejection', { rejectMsg });
 });
 
 app.get('/users', (req, res) => {
@@ -58,9 +41,8 @@ app.get('/users', (req, res) => {
 app.post('/registration', (req, res) => {
     const { name, email, password } = req.body;
 
-    db.forEach((user) => {
-        if (user.name === name || user.email === email) {
-            reject ='Write another email or password' ;
+    db.forEach((users) => {
+        if (users.name === name || users.email === email) {
             res.redirect('/rejection');
         }
     });
@@ -68,7 +50,7 @@ app.post('/registration', (req, res) => {
     db.push({ name, email, password });
     const dbUsers = JSON.stringify(db);
 
-    fs.writeFile(filePath, newUsers, err => {
+    fs.writeFile(filePath, dbUsers, err => {
         if (err) {
             throw err;
         }
@@ -80,9 +62,9 @@ app.post('/registration', (req, res) => {
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
 
-    db.forEach((user) => {
-        if (user.email === email && user.password === password) {
-            user = true;
+    db.forEach((users) => {
+        if (users.email === email && users.password === password) {
+            userLog = true;
             res.redirect('/users');
         }
     });
